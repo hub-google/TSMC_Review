@@ -1,0 +1,90 @@
+name: 同步資料與部署網站
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Every hour, minute 23 (GitHub Actions schedules are best-effort).
+    - cron: "23 * * * *"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: tsmc-review-site
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: 同步原始 Google Drive Excel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 安裝下載工具
+        run: python -m pip install "gdown>=5,<6"
+      - name: 下載並檢核試算表
+        id: sync
+        continue-on-error: true
+        env:
+          SOURCE_FILE_ID: 15iZELwo2eZei5sBh7r8VuR4JcYUXeXVt
+        run: python scripts/sync_drive_xlsx.py
+      - name: 提交有變動的資料，保留原資料作為同步失敗時的備援
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/data.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data: refresh review data from Google Drive"
+            git push origin main
+          else
+            echo "No updated data to commit."
+          fi
+      - name: 預防 GitHub 停用長期未更新的排程
+        if: github.event_name == 'schedule'
+        run: |
+          now=$(date +%s)
+          last=$(git log -1 --format=%ct)
+          if [ "$((now-last))" -ge $((28*86400)) ]; then
+            git commit --allow-empty -m "chore: keep scheduled review sync active"
+            git push origin main
+          fi
+      - name: 顯示同步結果
+        if: steps.sync.outcome == 'failure'
+        run: echo "::warning::Google Drive 同步失敗，網站保留上一版 data.json。檢查來源檔的「知道連結的人可檢視」與原 ID。"
+
+  deploy:
+    name: 部署 GitHub Pages
+    needs: sync
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: 準備靜態網站（不發布程式腳本與工作流程）
+        run: |
+          mkdir -p _site/data
+          cp index.html app.js _site/
+          cp data/data.json _site/data/data.json
+          touch _site/.nojekyll
+      - name: 設定 GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: 上傳 GitHub Pages 靜態網站
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: 發布網站
+        uses: actions/deploy-pages@v4
+        id: deployment

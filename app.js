@@ -9,20 +9,14 @@ const visible=()=>all.filter(x=>region==="all"||x.region===region);
 const find=x=>[x.factory,x.office,x.area,x.region].join(" ").toLowerCase().includes(query);
 function parse(rows){return rows.map((r,i)=>({id:i,region:String(r[0]||""),area:String(r[1]||""),office:String(r[2]||""),factory:String(r[3]||""),date:r[4],fyc:+r[5]||0,fycGap:+r[6]||0,clients:+r[7]||0,clientGap:+r[8]||0,q:+r[9]})).filter(r=>r.region&&r.factory&&r.office&&[1,2,3,4].includes(r.q))}
 function xy(r){
- // X: FYC attainment relative to a 600,000 benchmark derived from source's 72C threshold;
- // Y: new-customer gap relative to a 16 2/3-person source threshold.
- // Actual FYC and customer attainment can be reconstructed from the raw observed metric
- // and negative shortfall. The original sheet clips positive shortfall to zero.
- // Use fixed expected benchmarks from observed raw source, and show them as approximate.
- const ftarget=r.fyc-r.fycGap,ctarget=r.clients-r.clientGap;
- const fr=ftarget>0?r.fyc/ftarget:1,cr=ctarget>0?r.clients/ctarget:1;
- // For reached goals the gap is clipped to 0, but observed performance
- // still differentiates, using source's 600k/16.667 nominal scale.
- const fx=r.fycGap<0?Math.max(0.03,Math.min(.97,fr)):Math.max(0.03,Math.min(.97,r.fyc/600000));
- const cy=r.clientGap<0?Math.max(0.03,Math.min(.97,cr)):Math.max(0.03,Math.min(.97,r.clients/(50/3)));
- // Convert to coordinates within quadrant; clip to avoid edges.
- const x=r.q===1||r.q===2?Math.min(.92,Math.max(.10,(fx-1)*1.3+.20)) : Math.min(.90,Math.max(.10,fx*.85));
- const y=r.q===1||r.q===4?Math.min(.9,Math.max(.1,(cy-1)*.7+.18)) : Math.min(.9,Math.max(.1,cy*.85));
+ // The source uses 600,000 FYC and 16⅔ customers as reference thresholds.
+ // All points remain in their original source quadrant; their within-quadrant
+ // positions use observed attainment, with adjustment to avoid overlap.
+ const FYC_TARGET=600000, CLIENT_TARGET=50/3;
+ const xRatio=r.fyc/FYC_TARGET, yRatio=r.clients/CLIENT_TARGET;
+ const xPass=r.q===1||r.q===2,yPass=r.q===1||r.q===4;
+ const x=xPass?Math.max(.12,Math.min(.91,(xRatio-1)*.45+.16)):Math.max(.1,Math.min(.9,xRatio*.85));
+ const y=yPass?Math.max(.12,Math.min(.91,(yRatio-1)*.32+.17)):Math.max(.1,Math.min(.9,yRatio*.86));
  return {x,y};
 }
 function positions(arr){

@@ -90,8 +90,10 @@ jobs:
           cp index.html app.js _site/
           cp data/data.json _site/data/data.json
           touch _site/.nojekyll
-      - name: 設定 GitHub Pages
+      - name: 嘗試自動啟用 GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: 上傳 GitHub Pages 靜態網站
         uses: actions/upload-pages-artifact@v3
         with:

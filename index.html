@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0f172a">
-<meta name="description" content="台積電職域經營｜通訊處考核四象限預警儀表板">
+<meta name="description" content="台積電職域經營｜廠區考核四象限預警儀表板">
 <title>TSMC 職域考核預警｜區域中心四象限</title>
 <style>
 :root{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;color:#1a2740;background:#f3f6fb;font-synthesis:none}
@@ -26,18 +26,35 @@ header{background:linear-gradient(110deg,#142a50,#21477f 72%,#286785);color:whit
 .backdrop{position:fixed;inset:0;background:#12213c84;z-index:10;display:none}.backdrop.show{display:block}.drawer{position:fixed;right:0;top:0;bottom:0;width:min(490px,100%);z-index:11;background:#fff;transform:translateX(103%);transition:transform .22s ease;box-shadow:-10px 0 45px #0e23412b;overflow:auto}.drawer.show{transform:none}.drawer-top{background:#152b4f;color:#fff;padding:28px 28px 24px}.drawer-top .back{border:0;background:#ffffff24;color:#fff;border-radius:8px;padding:6px 11px;float:right}.drawer-top small{letter-spacing:.1em;color:#aed2f5}.drawer-top h2{font-size:27px;margin:13px 0 8px}.drawer-top p{font-size:13px;color:#c7d9ef;margin:0}.drawer-content{padding:26px}.drawer-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px}.drawer-summary .stat{padding:14px}.drawer-summary .stat strong{font-size:22px}.sect-title{font-size:15px;font-weight:850;margin:28px 0 13px;color:#263b58}.factory{border:1px solid #e7edf4;border-radius:13px;padding:16px;margin:11px 0}.factory-head{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:850}.factory small{font-size:11px;color:#98a4b4}.factory-lines{display:grid;grid-template-columns:1fr auto;gap:9px;font-size:12px;color:#738096;margin-top:15px}.factory-lines b{color:#263b58}.factory-lines b.neg{color:#d15b50}
 .notice{padding:15px 18px;border-radius:10px;background:#f6f8fc;color:#748299;font-size:12px;line-height:1.8;margin-top:18px}.err{padding:20px;background:#fff5f3;border:1px solid #efc4c0;border-radius:12px;color:#ad392f}.loading{color:#718096;margin:20px 0;text-align:center}.footer{font-size:11px;color:#9caabe;margin-top:22px;text-align:center}
 @media (max-width:1000px){.shell{padding:24px 20px 45px}.dashboard{grid-template-columns:1fr}.quad-grid{min-height:495px}.quad{min-height:245px}.stats{grid-template-columns:repeat(2,1fr)}}@media (max-width:600px){.shell{padding:12px 9px 35px}header{padding:22px 20px;border-radius:15px}.stats{gap:8px}.stat{padding:13px 14px;border-radius:12px}.stat strong{font-size:26px}.toolbar{padding:12px;display:block}.search{margin-top:12px;width:100%}.panel{padding:14px;border-radius:13px}.quad-grid{min-height:440px}.quad{min-height:215px}.quad .qh{padding:10px 7px;font-size:11px}.dot .name{font-size:10px}.dot .circle{width:10px;height:10px}.quad-layout{grid-template-columns:24px 1fr}.yaxis{font-size:10px}.xaxis{font-size:10px}.single .quad-grid{min-height:510px}.single .quad{min-height:250px}.region-foot{display:block}.pills{margin-top:9px}td,th{padding:11px 12px}.legend{margin-top:12px}}
+
+/* Factory-focused chart refinements */
+.plot-wrap{display:grid;grid-template-columns:53px minmax(0,1fr);gap:9px}
+.y-axis{display:flex;flex-direction:column;align-items:center;justify-content:space-between;color:#596c86;font-size:11px;font-weight:750;padding:18px 0 14px;gap:13px}
+.y-axis .axis-name{writing-mode:vertical-rl;transform:none;letter-spacing:.15em;color:#263f61;font-size:12px}
+.y-axis .axis-end{writing-mode:horizontal-tb;white-space:nowrap;font-size:10px}
+.x-axis{margin:8px 0 0 62px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#6e7e92;font-size:11px}
+.x-axis b{font-size:12px;color:#344d70}
+.quad-grid{grid-column:auto;min-height:510px}
+.quad{min-height:250px}
+.quad .qh{font-size:12px;padding:12px 11px;justify-content:flex-start}
+.quad .qh span{white-space:normal;line-height:1.35}
+.dot{min-width:72px;max-width:130px;padding:3px 5px;transform:translate(-50%,-25%)}
+.dot:hover{transform:translate(-50%,-30%)}
+.dot .name{max-width:130px;font-size:11px;line-height:1.25;overflow-wrap:anywhere}
+.dot .office-inline{font-size:10px;font-weight:500;color:#687d94}
+.single .quad-grid{min-height:650px}.single .quad{min-height:320px}
+@media(max-width:600px){.plot-wrap{grid-template-columns:30px minmax(0,1fr);gap:3px}.x-axis{margin-left:34px}.quad-grid{min-height:460px}.quad{min-height:226px}.dot{min-width:50px;max-width:94px}.dot .name{font-size:9px;max-width:94px}.dot .office-inline{font-size:9px}.quad .qh{font-size:10px;padding:9px 5px}.y-axis .axis-name{font-size:10px}.y-axis .axis-end{font-size:9px}.single .quad-grid{min-height:520px}.single .quad{min-height:255px}}
 </style>
 </head>
 <body>
 <div class="shell">
-<header><div class="kicker">WORKSITE PERFORMANCE INTELLIGENCE</div><div class="headrow"><div><h1>TSMC 職域考核預警</h1><p>區域中心 × 通訊處｜四象限分布與廠區考核明細</p></div><div class="head-tag"><span class="pulse"></span><span id="sync-pill">讀取資料中</span></div></div></header>
+<header><div class="kicker">WORKSITE PERFORMANCE INTELLIGENCE</div><div class="headrow"><div><h1>TSMC 職域考核預警</h1><p>區域中心 × 廠區｜四象限分布與考核明細</p></div><div class="head-tag"><span class="pulse"></span><span id="sync-pill">讀取資料中</span></div></div></header>
 <div class="topline"><h2>整體考核概覽</h2><span class="update" id="updated">—</span></div>
 <div class="stats" id="stats"><div class="loading">資料載入中…</div></div>
 <div class="toolbar"><div class="tabs" id="tabs"></div><input class="search" id="search" aria-label="搜尋通訊處或廠區" placeholder="搜尋通訊處／業務區／廠區"></div>
-<div class="legend"><b>象限圖例</b><span><i style="background:#268a79"></i>Ⅰ 雙項達標</span><span><i style="background:#d79b32"></i>Ⅱ 新客未達</span><span><i style="background:#d35e55"></i>Ⅲ 雙項未達</span><span><i style="background:#7772bd"></i>Ⅳ FYC未達</span></div>
-<p class="explain">橫軸：累月 FYC 是否達標｜縱軸：累月新個險客戶數是否達標。點位為避免重疊而分散排列，<b>不代表差額大小</b>。同一通訊處負責多廠區時，任一廠區未達標即列入對應預警；點擊可查看全部廠區原始資料。</p>
+<p class="explain">每個點代表一個廠區，名稱為「廠區（通訊處）」。象限依 Excel 原始分類；點位依實際績效與未達標差距安排，略做避讓以提升辨識度，不能直接解讀為精確達標率。</p>
 <main id="dashboard" class="dashboard"></main>
-<section class="list-panel"><div class="list-top"><div><h3>通訊處明細</h3><p id="list-note">依來源「象限」欄位判定，整併後呈現</p></div><span id="rowcount" class="update"></span></div><div class="table-wrap"><table><thead><tr><th>區域中心</th><th>業務區／通訊處</th><th>廠區數</th><th>FYC 累計</th><th>新客戶累計</th><th>預警象限</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="list-panel"><div class="list-top"><div><h3>廠區明細</h3><p id="list-note">直接使用原始廠區考核資料</p></div><span id="rowcount" class="update"></span></div><div class="table-wrap"><table><thead><tr><th>區域中心</th><th>廠區（通訊處）</th><th>FYC 實績</th><th>FYC 差額</th><th>新客戶數</th><th>新客差額</th><th>象限</th></tr></thead><tbody id="rows"></tbody></table></div></section>
 <div class="footer">資料來源：指定 Google Drive 試算表｜考核計算以原始「象限」欄位及差額欄位為準。公開網頁請勿放置個人身分資料。</div>
 </div>
 <div id="backdrop" class="backdrop" tabindex="-1"></div><aside id="drawer" class="drawer" aria-label="通訊處明細" aria-modal="true" role="dialog"></aside>

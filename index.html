@@ -44,6 +44,15 @@ header{background:linear-gradient(110deg,#142a50,#21477f 72%,#286785);color:whit
 .dot .office-inline{font-size:10px;font-weight:500;color:#687d94}
 .single .quad-grid{min-height:650px}.single .quad{min-height:320px}
 @media(max-width:600px){.plot-wrap{grid-template-columns:30px minmax(0,1fr);gap:3px}.x-axis{margin-left:34px}.quad-grid{min-height:460px}.quad{min-height:226px}.dot{min-width:50px;max-width:94px}.dot .name{font-size:9px;max-width:94px}.dot .office-inline{font-size:9px}.quad .qh{font-size:10px;padding:9px 5px}.y-axis .axis-name{font-size:10px}.y-axis .axis-end{font-size:9px}.single .quad-grid{min-height:520px}.single .quad{min-height:255px}}
+
+/* Strong, readable quadrant headings: label + factory count stay together */
+.quad .qh{font-size:clamp(16px,1.45vw,20px);font-weight:900;padding:16px 17px;line-height:1.35;letter-spacing:.01em;position:relative;z-index:3}
+.quad .qh span{white-space:normal;overflow-wrap:anywhere;line-height:1.35;text-shadow:0 1px 0 #fff9}
+.single .quad .qh{font-size:clamp(19px,1.8vw,24px);padding:19px 22px}
+@media(max-width:600px){
+ .quad .qh{font-size:clamp(13px,3.4vw,17px);padding:11px 8px;line-height:1.4}
+ .single .quad .qh{font-size:clamp(14px,3.7vw,19px);padding:13px 10px}
+}
 </style>
 </head>
 <body>

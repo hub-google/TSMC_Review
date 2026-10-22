@@ -60,7 +60,9 @@ function dashboard(){
  $("dashboard").querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{region=b.dataset.open;render();$("dashboard").scrollIntoView({behavior:"smooth"})});
 }
 function table(){
- const a=visible().filter(find).sort((a,b)=>b.q-a.q||a.region.localeCompare(b.region,"zh-Hant")||a.factory.localeCompare(b.factory,"zh-Hant"));
+ const regionOrder=["桃竹區域","中嘉區域","台南區域","高屏區域"];
+ const regionRank=r=>{const i=regionOrder.indexOf(r);return i<0?regionOrder.length:i};
+ const a=visible().filter(find).sort((a,b)=>regionRank(a.region)-regionRank(b.region)|| (regionRank(a.region)===regionOrder.length?a.region.localeCompare(b.region,"zh-Hant"):0) || b.fyc-a.fyc || a.factory.localeCompare(b.factory,"zh-Hant"));
  $("list-note").textContent="每筆資料代表一個廠區，數值與象限直接取自原始工作表";
  $("rowcount").textContent=a.length+" 個廠區";
  $("rows").innerHTML=a.map(r=>'<tr class="data-row" tabindex="0" data-id="'+r.id+'"><td>'+esc(r.region)+'</td><td><strong>'+esc(r.factory)+'（'+esc(r.office)+'）</strong><div class="muted">'+esc(r.area)+'</div></td><td>'+num(r.fyc)+'</td><td class="number">'+num(r.fycGap)+'</td><td>'+num(r.clients)+'</td><td class="number">'+num(r.clientGap)+'</td><td><span class="tb-q q'+r.q+'">'+names[r.q]+'</span></td></tr>').join("")||'<tr><td colspan="7" style="text-align:center;padding:25px">沒有符合條件的廠區</td></tr>';

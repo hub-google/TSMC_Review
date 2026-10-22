@@ -26,7 +26,7 @@ function positions(arr){
   let {x,y}=xy(r);const px=9+x*82,py=91-y*80;
   let best={x:px,y:py,score:Infinity};
   // Keep point proximity to measured attainment while reducing label overlaps.
-  for(let k=0;k<38;k++){const xx=Math.max(13,Math.min(87,px+((k%7)-3)*8));const yy=Math.max(20,Math.min(84,py+(Math.floor(k/7)-2)*10));
+  for(let k=0;k<38;k++){const xx=Math.max(19,Math.min(81,px+((k%7)-3)*8));const yy=Math.max(39,Math.min(76,py+(Math.floor(k/7)-2)*10));
    let score=Math.pow(xx-px,2)*.42+Math.pow(yy-py,2)*.46;
    for(const p of grid.values()){let dx=Math.abs(xx-p.x),dy=Math.abs(yy-p.y);if(dx<24&&dy<24)score+=450+(24-dx)*(24-dy);}
    if(score<best.score)best={x:xx,y:yy,score};

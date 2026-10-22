@@ -53,6 +53,18 @@ header{background:linear-gradient(110deg,#142a50,#21477f 72%,#286785);color:whit
  .quad .qh{font-size:clamp(13px,3.4vw,17px);padding:11px 8px;line-height:1.4}
  .single .quad .qh{font-size:clamp(14px,3.7vw,19px);padding:13px 10px}
 }
+
+/* Keep headings and point labels in separate vertical bands. */
+.quad{overflow:hidden}
+.quad .qh{min-height:82px;align-items:flex-start;display:flex;z-index:5;pointer-events:none}
+.quad .dot{z-index:2}
+.quad .dot:hover,.quad .dot:focus-visible{z-index:6}
+@media(max-width:600px){
+ .quad .qh{min-height:76px;padding-left:8px;padding-right:8px}
+ .quad{min-height:260px}
+ .single .quad{min-height:285px}
+ .dot .name{overflow-wrap:anywhere}
+}
 </style>
 </head>
 <body>

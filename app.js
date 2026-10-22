@@ -3,6 +3,8 @@
 const $=id=>document.getElementById(id), names={1:"雙項達標",2:"新客戶未達標",3:"雙項未達標",4:"FYC 未達標"};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const num=n=>Number(n||0).toLocaleString("zh-TW",{maximumFractionDigits:1});
+const roundedGap=n=>Math.round(Number(n)||0).toLocaleString("zh-TW");
+const negClass=n=>Number(n)<0?' neg':'';
 const date=n=>Number.isFinite(+n)&& +n>1000?new Date(Date.UTC(1899,11,30)+Math.floor(+n)*86400000).toISOString().slice(0,10):"—";
 let all=[],region="all",query="",selected=null;
 const visible=()=>all.filter(x=>region==="all"||x.region===region);
@@ -65,7 +67,7 @@ function table(){
  const a=visible().filter(find).sort((a,b)=>regionRank(a.region)-regionRank(b.region)|| (regionRank(a.region)===regionOrder.length?a.region.localeCompare(b.region,"zh-Hant"):0) || b.fyc-a.fyc || a.factory.localeCompare(b.factory,"zh-Hant"));
  $("list-note").textContent="每筆資料代表一個廠區，數值與象限直接取自原始工作表";
  $("rowcount").textContent=a.length+" 個廠區";
- $("rows").innerHTML=a.map(r=>'<tr class="data-row" tabindex="0" data-id="'+r.id+'"><td>'+esc(r.region)+'</td><td><strong>'+esc(r.factory)+'（'+esc(r.office)+'）</strong><div class="muted">'+esc(r.area)+'</div></td><td>'+num(r.fyc)+'</td><td class="number">'+num(r.fycGap)+'</td><td>'+num(r.clients)+'</td><td class="number">'+num(r.clientGap)+'</td><td><span class="tb-q q'+r.q+'">'+names[r.q]+'</span></td></tr>').join("")||'<tr><td colspan="7" style="text-align:center;padding:25px">沒有符合條件的廠區</td></tr>';
+ $("rows").innerHTML=a.map(r=>'<tr class="data-row" tabindex="0" data-id="'+r.id+'"><td>'+esc(r.region)+'</td><td><strong>'+esc(r.factory)+'（'+esc(r.office)+'）</strong><div class="muted">'+esc(r.area)+'</div></td><td>'+num(r.fyc)+'</td><td class="number'+negClass(r.fycGap)+'">'+num(r.fycGap)+'</td><td>'+num(r.clients)+'</td><td class="number'+negClass(r.clientGap)+'">'+roundedGap(r.clientGap)+'</td><td><span class="tb-q q'+r.q+'">'+names[r.q]+'</span></td></tr>').join("")||'<tr><td colspan="7" style="text-align:center;padding:25px">沒有符合條件的廠區</td></tr>';
  $("rows").querySelectorAll("[data-id]").forEach(t=>{t.onclick=()=>details(+t.dataset.id);t.onkeydown=e=>{if(e.key==="Enter")details(+t.dataset.id)}});
 }
 function details(i){
